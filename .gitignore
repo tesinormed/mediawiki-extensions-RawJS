@@ -1,6 +1,9 @@
 # Composer
-/composer.lock
-/vendor
+composer.lock
+vendor
+
+# pnpm
+node_modules
 
 # JetBrains IDEs
-/.idea
+.idea

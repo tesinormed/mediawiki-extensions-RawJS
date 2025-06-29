@@ -1,6 +1,6 @@
 {
 	"name": "RawJS",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"author": [
 		"tesinormed"
 	],
@@ -29,6 +29,15 @@
 	"Hooks": {
 		"ParserFirstCallInit": "main",
 		"ContentHandlerDefaultModelFor": "main"
+	},
+	"ResourceModules": {
+		"ext.RawJS": {
+			"localBasePath": "modules/ext.RawJS",
+			"remoteExtPath": "RawJS/modules/ext.RawJS",
+			"packageFiles": [
+				"ext.RawJS.js"
+			]
+		}
 	},
 	"TrackingCategories": [
 		"rawjs-tracking-category"

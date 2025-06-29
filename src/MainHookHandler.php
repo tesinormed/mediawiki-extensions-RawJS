@@ -4,13 +4,13 @@ namespace MediaWiki\Extension\RawJS;
 
 use MediaWiki\Content\JavaScriptContent;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use MediaWiki\Html\Html;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Revision\Hook\ContentHandlerDefaultModelForHook;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 
 class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultModelForHook {
 	private PageLookup $pageLookup;
@@ -57,10 +57,15 @@ class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultM
 			);
 		}
 
-		$parser->getOutput()->addHeadItem(
-			Html::rawElement( 'script', [ 'defer' ], $sourceContent->getText() ),
-			'rawjs:' . $params['src']
-		);
+		$parser->getOutput()->addModules( [ 'ext.RawJS' ] );
+
+		$sources = $parser->getOutput()->getJsConfigVars()['wgRawJsSources'] ?? [];
+		$sources[] = Title::newFromPageIdentity( $sourcePage )->getFullURL( [
+			'action' => 'raw',
+			'ctype' => 'text/javascript'
+		] );
+		$parser->getOutput()->setJsConfigVar( 'wgRawJsSources', $sources );
+
 		return '';
 	}
 
