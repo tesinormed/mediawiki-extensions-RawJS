@@ -8,10 +8,11 @@ use MediaWiki\Html\Html;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Revision\Hook\ContentHandlerDefaultModelForHook;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\SlotRecord;
 
-class MainHookHandler implements ParserFirstCallInitHook {
+class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultModelForHook {
 	private PageLookup $pageLookup;
 	private RevisionLookup $revisionLookup;
 
@@ -38,7 +39,12 @@ class MainHookHandler implements ParserFirstCallInitHook {
 			'RawJS-' . str_replace( ' ', '_', $params['src'] )
 		);
 		if ( $sourcePage === null ) {
-			return self::formatError( $parser, 'rawjs-tag-invalid-src', wfEscapeWikiText( $params['src'] ) );
+			return self::formatError(
+				$parser,
+				'rawjs-tag-invalid-src',
+				$parser->getContentLanguage()->getFormattedNsText( NS_MEDIAWIKI ),
+				wfEscapeWikiText( $params['src'] )
+			);
 		}
 
 		$sourceContent = $this->revisionLookup->getRevisionByTitle( $sourcePage )?->getContent( SlotRecord::MAIN );
@@ -59,5 +65,18 @@ class MainHookHandler implements ParserFirstCallInitHook {
 		return '<strong class="error">'
 			. wfMessage( $key, ...$params )->inContentLanguage()->parse()
 			. '</strong>';
+	}
+
+	/**
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ContentHandlerDefaultModelFor
+	 * @inheritDoc
+	 */
+	public function onContentHandlerDefaultModelFor( $title, &$model ): bool {
+		if ( $title->getNamespace() === NS_MEDIAWIKI && str_starts_with( $title->getText(), 'RawJS-' ) ) {
+			$model = CONTENT_MODEL_JAVASCRIPT;
+			return false;
+		}
+
+		return true;
 	}
 }

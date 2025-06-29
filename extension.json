@@ -1,6 +1,6 @@
 {
 	"name": "RawJS",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"author": [
 		"tesinormed"
 	],
@@ -27,7 +27,8 @@
 		}
 	},
 	"Hooks": {
-		"ParserFirstCallInit": "main"
+		"ParserFirstCallInit": "main",
+		"ContentHandlerDefaultModelFor": "main"
 	},
 	"TrackingCategories": [
 		"rawjs-tracking-category"
