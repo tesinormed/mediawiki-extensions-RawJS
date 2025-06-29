@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"tesinormed"
+		]
+	},
+	"rawjs-desc": "Allows for the transclusion of JavaScript into pages",
+	"rawjs-tag-missing-src": "RawJS: <code>src</code> attribute is missing",
+	"rawjs-tag-invalid-src": "RawJS: <code>src</code> attribute is invalid (<code>$1</code> does not exist or does not have correct content model)",
+	"rawjs-tracking-category": "Pages with RawJS errors"
+}

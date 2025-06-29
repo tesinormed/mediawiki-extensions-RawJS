@@ -1,0 +1,41 @@
+{
+	"name": "RawJS",
+	"version": "0.1.0",
+	"author": [
+		"tesinormed"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:RawJS",
+	"descriptionmsg": "rawjs-desc",
+	"license-name": "CC0-1.0",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.43.0",
+		"platform": {
+			"php": ">= 8.1"
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\RawJS\\": "src/"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\RawJS\\MainHookHandler",
+			"services": [
+				"PageStore",
+				"RevisionStore"
+			]
+		}
+	},
+	"Hooks": {
+		"ParserFirstCallInit": "main"
+	},
+	"TrackingCategories": [
+		"rawjs-tracking-category"
+	],
+	"MessagesDirs": {
+		"RawJS": [
+			"i18n"
+		]
+	},
+	"manifest_version": 2
+}
