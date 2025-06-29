@@ -57,7 +57,11 @@ class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultM
 			);
 		}
 
-		return Html::rawElement( 'script', contents: $sourceContent->getText() );
+		$parser->getOutput()->addHeadItem(
+			Html::rawElement( 'script', [ 'defer' ], $sourceContent->getText() ),
+			'rawjs:' . $params['src']
+		);
+		return '';
 	}
 
 	private static function formatError( Parser $parser, mixed $key, mixed ...$params ): string {
