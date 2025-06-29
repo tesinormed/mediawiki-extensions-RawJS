@@ -43,7 +43,12 @@ class MainHookHandler implements ParserFirstCallInitHook {
 
 		$sourceContent = $this->revisionLookup->getRevisionByTitle( $sourcePage )?->getContent( SlotRecord::MAIN );
 		if ( !$sourceContent instanceof JavaScriptContent ) {
-			return self::formatError( $parser, 'rawjs-tag-invalid-src', wfEscapeWikiText( $params['src'] ) );
+			return self::formatError(
+				$parser,
+				'rawjs-tag-invalid-src',
+				$parser->getContentLanguage()->getFormattedNsText( NS_MEDIAWIKI ),
+				wfEscapeWikiText( $params['src'] )
+			);
 		}
 
 		return Html::rawElement( 'script', contents: $sourceContent->getText() );
