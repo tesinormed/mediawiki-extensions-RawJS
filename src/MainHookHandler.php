@@ -2,23 +2,18 @@
 
 namespace MediaWiki\Extension\RawJS;
 
-use MediaWiki\Content\JavaScriptContent;
 use MediaWiki\Hook\ParserFirstCallInitHook;
 use MediaWiki\Page\PageLookup;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Revision\Hook\ContentHandlerDefaultModelForHook;
-use MediaWiki\Revision\RevisionLookup;
-use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Title\Title;
 
 class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultModelForHook {
 	private PageLookup $pageLookup;
-	private RevisionLookup $revisionLookup;
 
-	public function __construct( PageLookup $pageLookup, RevisionLookup $revisionLookup ) {
+	public function __construct( PageLookup $pageLookup ) {
 		$this->pageLookup = $pageLookup;
-		$this->revisionLookup = $revisionLookup;
 	}
 
 	/**
@@ -47,33 +42,16 @@ class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultM
 			);
 		}
 
-		$sourceContent = $this->revisionLookup->getRevisionByTitle( $sourcePage )?->getContent( SlotRecord::MAIN );
-		if ( !$sourceContent instanceof JavaScriptContent ) {
-			return self::formatError(
-				$parser,
-				'rawjs-tag-invalid-src',
-				$parser->getContentLanguage()->getFormattedNsText( NS_MEDIAWIKI ),
-				wfEscapeWikiText( $params['src'] )
-			);
-		}
-
 		$parser->getOutput()->addModules( [ 'ext.RawJS' ] );
-
-		$sources = $parser->getOutput()->getJsConfigVars()['wgRawJsSources'] ?? [];
-		$sources[] = Title::newFromPageIdentity( $sourcePage )->getFullURL( [
-			'action' => 'raw',
-			'ctype' => 'text/javascript'
-		] );
-		$parser->getOutput()->setJsConfigVar( 'wgRawJsSources', $sources );
+		$parser->getOutput()->appendJsConfigVar(
+			'wgRawJsSources',
+			Title::newFromPageIdentity( $sourcePage )->getFullURL( [
+				'action' => 'raw',
+				'ctype' => 'text/javascript'
+			] )
+		);
 
 		return '';
-	}
-
-	private static function formatError( Parser $parser, mixed $key, mixed ...$params ): string {
-		$parser->addTrackingCategory( 'rawjs-tracking-category' );
-		return '<strong class="error">'
-			. wfMessage( $key, ...$params )->inContentLanguage()->parse()
-			. '</strong>';
 	}
 
 	/**
@@ -87,5 +65,12 @@ class MainHookHandler implements ParserFirstCallInitHook, ContentHandlerDefaultM
 		}
 
 		return true;
+	}
+
+	private static function formatError( Parser $parser, mixed $key, mixed ...$params ): string {
+		$parser->addTrackingCategory( 'rawjs-tracking-category' );
+		return '<strong class="error">'
+			. wfMessage( $key, ...$params )->inContentLanguage()->parse()
+			. '</strong>';
 	}
 }
